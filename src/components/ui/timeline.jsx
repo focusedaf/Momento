@@ -2,18 +2,35 @@ import { useScroll, useTransform, motion } from "motion/react";
 import React, { useEffect, useRef, useState } from "react";
 import Polaroid from "./polaroid";
 
-const generatePolaroids = (yearIndex) =>
-  Array.from({ length: 7 }, (_, j) => ({
+const generatePolaroids = (yearIndex) => {
+  const positions = [
+    "absolute top-10 left-[20%] rotate-[-5deg]",
+    "absolute top-40 left-[25%] rotate-[-7deg]",
+    "absolute top-5 left-[40%] rotate-[8deg]",
+    "absolute top-32 left-[55%] rotate-[10deg]",
+    "absolute top-20 left-[35%] rotate-[2deg]",
+    "absolute top-24 left-[45%] rotate-[-7deg]",
+    "absolute top-8 left-[30%] rotate-[4deg]",
+  ];
+
+  const zIndexes = [
+    "z-[7]", 
+    "z-[6]",
+    "z-[5]",
+    "z-[4]",
+    "z-[3]",
+    "z-[2]",
+    "z-[1]", 
+  ];
+
+  return Array.from({ length: 7 }, (_, j) => ({
     title: `Image ${j + 1} - ${2006 + yearIndex}`,
     image: `https://source.unsplash.com/random/400x400?sig=${
       yearIndex * 10 + j
     }`,
-    className: `absolute top-[${Math.random() * 50}%] left-[${
-      Math.random() * 60
-    }%] rotate-[${-10 + Math.random() * 20}deg]`,
+    className: `${positions[j]} ${zIndexes[j]}`, 
   }));
-
-
+};
 
 export const Timeline = ({ data }) => {
   const ref = useRef(null);
