@@ -14,21 +14,19 @@ const generatePolaroids = (yearIndex) => {
   ];
 
   const zIndexes = [
-    "z-[7]", 
+    "z-[7]",
     "z-[6]",
     "z-[5]",
     "z-[4]",
     "z-[3]",
     "z-[2]",
-    "z-[1]", 
+    "z-[1]",
   ];
-
+  const year = 2006 + yearIndex;
   return Array.from({ length: 7 }, (_, j) => ({
-    title: `Image ${j + 1} - ${2006 + yearIndex}`,
-    image: `https://source.unsplash.com/random/400x400?sig=${
-      yearIndex * 10 + j
-    }`,
-    className: `${positions[j]} ${zIndexes[j]}`, 
+    title:"hello",
+    image: `/timeline/${year}/img${j + 1}.jpg`,
+    className: `${positions[j]} ${zIndexes[j]} object-cover`,
   }));
 };
 
@@ -76,19 +74,20 @@ export const Timeline = ({ data }) => {
               <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-white dark:bg-black flex items-center justify-center">
                 <div className="h-4 w-4 rounded-full bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 p-2" />
               </div>
-              <h3 className="hidden md:block text-xl md:pl-20 md:text-5xl font-bold text-neutral-500 dark:text-neutral-500">
-                {item.year}
-              </h3>
             </div>
 
             <div className="relative pl-20 pr-4 md:pl-4 w-full">
               <h3 className="md:hidden block text-2xl mb-4 text-left font-bold text-neutral-500 dark:text-neutral-500">
                 {item.year}
               </h3>
-              <Polaroid items={generatePolaroids(index)} />
+              <Polaroid
+                items={generatePolaroids(index)}
+                message={item.message}
+              />
             </div>
           </div>
         ))}
+
         <div
           style={{
             height: height + "px",
