@@ -2,31 +2,67 @@ import { useScroll, useTransform, motion } from "motion/react";
 import React, { useEffect, useRef, useState } from "react";
 import Polaroid from "./polaroid";
 
-const generatePolaroids = (yearIndex) => {
+const folderNames = ["baby-toddler", "tween-teen1", "tween-teen2"];
+
+const generatePolaroids = (folderIndex, imageCount) => {
   const positions = [
-    "absolute top-10 left-[20%] rotate-[-5deg]",
-    "absolute top-40 left-[25%] rotate-[-7deg]",
-    "absolute top-5 left-[40%] rotate-[8deg]",
-    "absolute top-32 left-[55%] rotate-[10deg]",
-    "absolute top-20 left-[35%] rotate-[2deg]",
-    "absolute top-24 left-[45%] rotate-[-7deg]",
-    "absolute top-8 left-[30%] rotate-[4deg]",
+    "top-10 left-[20%] rotate-[-5deg]",
+    "top-40 left-[25%] rotate-[-7deg]",
+    "top-5 left-[40%] rotate-[8deg]",
+    "top-32 left-[55%] rotate-[10deg]",
+    "top-20 left-[35%] rotate-[2deg]",
+    "top-24 left-[45%] rotate-[-7deg]",
+    "top-8 left-[30%] rotate-[4deg]",
+    "top-36 left-[28%] rotate-[12deg]",
+    "top-12 left-[50%] rotate-[-3deg]",
+    "top-28 left-[60%] rotate-[7deg]",
+    "top-6 left-[45%] rotate-[-9deg]",
+    "top-44 left-[40%] rotate-[5deg]",
   ];
 
-  const zIndexes = [
-    "z-[7]",
-    "z-[6]",
-    "z-[5]",
-    "z-[4]",
-    "z-[3]",
-    "z-[2]",
-    "z-[1]",
+  const folder = folderNames[folderIndex];
+
+  
+  const titles = [
+    "Sweet Moments",
+    "Growing Up",
+    "Playing",
+    "Learning",
+    "Adventures",
+    "Big Smiles",
+    "First Steps",
+    "Happy Days",
+    "Memories",
+    "Fun Times",
+    "Special Day",
+    "New Discovery",
+    "Giggles",
+    "Exploring",
+    "Best Friends",
+    "Silly Face",
+    "Proud Moment",
+    "Summer Fun",
+    "Learning New Things",
+    "Joy",
+    "Cuddles",
+    "Playtime",
   ];
-  const year = 2006 + yearIndex;
-  return Array.from({ length: 7 }, (_, j) => ({
-    title:"hello",
-    image: `/timeline/${year}/img${j + 1}.jpg`,
-    className: `${positions[j]} ${zIndexes[j]} object-cover`,
+
+  if (!folder || !imageCount) {
+    console.log("Missing folder or imageCount:", {
+      folderIndex,
+      folder,
+      imageCount,
+    });
+    return [];
+  }
+
+  return Array.from({ length: imageCount }, (_, j) => ({
+    title: titles[j % titles.length],
+    image: `/timeline/${folder}/img${j + 1}.jpg`,
+    className: `absolute ${positions[j % positions.length]} z-[${
+      imageCount - j
+    }] object-cover hover:z-50 transition-all duration-300 hover:scale-105`,
   }));
 };
 
@@ -51,10 +87,7 @@ export const Timeline = ({ data }) => {
   const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
-    <div
-      className="w-full bg-pink-50 font-primary md:px-10"
-      ref={containerRef}
-    >
+    <div className="w-full bg-pink-50 font-primary md:px-10" ref={containerRef}>
       <div className="max-w-7xl mx-auto py-20 px-4 md:px-8 lg:px-10">
         <h2 className="text-2xl md:text-xl mb-4 text-black dark:text-white max-w-4xl ">
           Momento
@@ -84,7 +117,7 @@ export const Timeline = ({ data }) => {
                 {item.year}
               </h3>
               <Polaroid
-                items={generatePolaroids(index)}
+                items={generatePolaroids(index, item.imageCount || 6)}
                 message={item.message}
               />
             </div>
