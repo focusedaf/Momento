@@ -26,9 +26,11 @@ export default function App() {
   ];
 
   return (
-    <div>
-      <Timeline data={years} />
+    <div className=" ">
+      {" "}
      
+        <Timeline data={years} />
+    
     </div>
   );
 }
