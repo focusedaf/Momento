@@ -6,7 +6,7 @@ import {
 export default function Polaroid({ items, message }) {
   return (
     <DraggableCardContainer className="relative flex min-h-screen w-full items-center justify-center overflow-clip ">
-      <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-black text-neutral-400 md:text-4xl dark:text-neutral-800 font-primary">
+      <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-pink text-pink-400 md:text-4xl dark:text-pink-800 font-primary">
         {message}
       </p>
       {[...items].reverse().map((item, index) => (
