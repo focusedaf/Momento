@@ -4,7 +4,7 @@ import { Timeline } from "./components/ui/timeline";
 export default function App() {
   const data = [
     {
-      year: "Small You Era",
+      year: "Small You Era!!!",
       message:
         "Tiny toes, chubby cheeks, and nonstop giggles — peak cuteness unlocked.",
       imageCount: 10,
@@ -24,7 +24,7 @@ export default function App() {
     {
       year: "Tween Years",
       message:
-        "Selfie mode: always on. Slayin' fits, silly faces, and pure main character energy. ",
+        "Selfie mode: always on. Slayin' fits, silly faces, and pure main character energy.",
       imageCount: 22,
       titles: [
         "Cutie Pie",
@@ -54,7 +54,7 @@ export default function App() {
     {
       year: "Teenage Adventures",
       message:
-        "Walking icon, twinning hard, and serving looks. Absolute chaos, absolute legend. ",
+        "Walking icon, twinning hard, and serving looks. Absolute chaos, absolute legend.",
       imageCount: 22,
       titles: [
         "Lol You Forcing Me For A Pic Together",
@@ -90,7 +90,7 @@ export default function App() {
           Momento
         </h2>
         <p className="text-pink-600 text-sm md:text-base mx-auto max-w-md">
-          hehehhehe
+          Where every memory, is a keepsake!
         </p>
       </div>
       <Timeline data={data} />

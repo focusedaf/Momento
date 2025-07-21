@@ -78,8 +78,9 @@ export const Timeline = ({ data }) => {
               </h3>
             </div>
 
+            {/* mobile ke liye hai bc */}
             <div className="relative pl-20 pr-4 md:pl-4 w-full">
-              <h3 className="md:hidden block text-2xl mb-4 text-left font-bold text-neutral-500 dark:text-neutral-500 ">
+              <h3 className="md:hidden block text-2xl mb-4 text-left font-bold text-pink-500 dark:text-pink-500 ">
                 {item.year}
               </h3>
               <Polaroid
@@ -89,6 +90,7 @@ export const Timeline = ({ data }) => {
                   item.titles
                 )}
                 message={item.message}
+                
               />
             </div>
           </div>

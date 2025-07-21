@@ -11,7 +11,7 @@ export default function Polaroid({ items, message }) {
       </p>
       {[...items].reverse().map((item, index) => (
         <DraggableCardBody key={index} className={item.className}>
-          <div className="bg-white shadow-xl rounded-md p-4 flex flex-col items-center space-y-3 dark:bg-neutral-200">
+          <div className="bg-white shadow-xl rounded-md p-4 flex flex-col items-center space-y-3 dark:bg-neutral-200 ">
             <img
               src={item.image}
               alt={item.title}
