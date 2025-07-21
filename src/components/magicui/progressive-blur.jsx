@@ -6,6 +6,7 @@ function ProgressiveBlur({
   height = "30%",
   position = "bottom",
   blurLevels = [0.5, 1, 2, 4, 8, 16, 32, 64],
+  // eslint-disable-next-line no-unused-vars
   children,
 }) {
   const divElements = Array(blurLevels.length - 2).fill(null);

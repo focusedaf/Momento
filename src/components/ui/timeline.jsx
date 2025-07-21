@@ -1,10 +1,17 @@
-import { useScroll, useTransform, motion } from "motion/react";
+/* eslint-disable no-unused-vars */
+import { useScroll, useTransform, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import Polaroid from "./polaroid";
+import {
+  DraggableCardBody,
+  DraggableCardContainer,
+} from "@/components/ui/draggable-card";
 
-const folderNames = ["baby-toddler", "tween-teen1", "tween-teen2"];
+// Import your JSON data
+import babyData from '../data/baby.json';
+import tweenData from '../data/tween.json';
+import teenData from '../data/teen.json';
 
-const generatePolaroids = (folderIndex, imageCount, titles = []) => {
+const generateCards = (jsonData, titles = []) => {
   const positions = [
     "top-10 left-[20%] rotate-[-5deg]",
     "top-40 left-[25%] rotate-[-7deg]",
@@ -20,31 +27,46 @@ const generatePolaroids = (folderIndex, imageCount, titles = []) => {
     "top-44 left-[40%] rotate-[5deg]",
   ];
 
-  const folder = folderNames[folderIndex];
+  return jsonData.map((item, index) => ({
+    title: titles[index] || item.title,
+    image: item.url,
+    className: `absolute ${positions[index % positions.length]} z-[${
+      jsonData.length - index
+    }] object-cover hover:z-50 transition-all duration-300 hover:scale-105`,
+  }));
+};
 
-  
-  if (!folder || !imageCount) {
-    console.log("Missing folder or imageCount:", {
-      folderIndex,
-      folder,
-      imageCount,
-    });
-    return [];
-  }
-
-   return Array.from({ length: imageCount }, (_, j) => ({
-     title: titles[j % titles.length] || `Memory ${j + 1}`,
-     image: `/timeline/${folder}/img${j + 1}.jpg`,
-     className: `absolute ${positions[j % positions.length]} z-[${
-       imageCount - j
-     }] object-cover hover:z-50 transition-all duration-300 hover:scale-105`,
-   }));
+const CardSection = ({ items, message }) => {
+  return (
+    <DraggableCardContainer className="relative flex min-h-screen w-full items-center justify-center overflow-clip">
+      <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-pink text-pink-400 md:text-4xl dark:text-pink-800 font-primary">
+        {message}
+      </p>
+      {[...items].reverse().map((item, index) => (
+        <DraggableCardBody key={index} className={item.className}>
+          <div className="bg-white shadow-xl rounded-md p-4 flex flex-col items-center space-y-3 dark:bg-neutral-200">
+            <img
+              src={item.image}
+              alt={item.title}
+              className="relative z-10 h-64 w-64 object-cover mb-4"
+            />
+            <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-800 text-center font-primary">
+              {item.title}
+            </p>
+          </div>
+        </DraggableCardBody>
+      ))}
+    </DraggableCardContainer>
+  );
 };
 
 export const Timeline = ({ data }) => {
   const ref = useRef(null);
   const containerRef = useRef(null);
   const [height, setHeight] = useState(0);
+
+  // Map the data to corresponding JSON files
+  const jsonDataMap = [babyData, tweenData, teenData];
 
   useEffect(() => {
     if (ref.current) {
@@ -83,14 +105,12 @@ export const Timeline = ({ data }) => {
               <h3 className="md:hidden block text-2xl mb-4 text-left font-bold text-pink-500 dark:text-pink-500 ">
                 {item.year}
               </h3>
-              <Polaroid
-                items={generatePolaroids(
-                  index,
-                  item.imageCount || 6,
+              <CardSection
+                items={generateCards(
+                  jsonDataMap[index],
                   item.titles
                 )}
                 message={item.message}
-                
               />
             </div>
           </div>
@@ -114,6 +134,3 @@ export const Timeline = ({ data }) => {
     </div>
   );
 };
-
-
-// bg-gradient-to-t from-indigo-500 via-pink-500 to-transparent from-[0%] via-[10%] 

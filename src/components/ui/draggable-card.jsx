@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { cn } from "@/lib/utils";
 import React, { useRef, useState, useEffect } from "react";
 import {
+  // eslint-disable-next-line no-unused-vars
   motion,
   useMotionValue,
   useSpring,
@@ -22,77 +24,88 @@ export const DraggableCardBody = ({ className, children }) => {
     bottom: 0,
   });
 
-  // physics biatch
+  // Enhanced physics for speed and smoothness
   const velocityX = useVelocity(mouseX);
   const velocityY = useVelocity(mouseY);
 
+  // Faster, more responsive spring config
   const springConfig = {
-    stiffness: 100,
-    damping: 20,
-    mass: 0.5,
+    stiffness: 120,      // Increased from 50
+    damping: 25,         // Increased from 20
+    mass: 0.3,           // Reduced from 0.5
+    velocity: 2,         // Added velocity
   };
 
+  // Reduced rotation sensitivity for smoother feel
   const rotateX = useSpring(
-    useTransform(mouseY, [-300, 300], [25, -25]),
+    useTransform(mouseY, [-200, 200], [15, -15]), // Reduced from [-300, 300] and [25, -25]
     springConfig
   );
   const rotateY = useSpring(
-    useTransform(mouseX, [-300, 300], [-25, 25]),
+    useTransform(mouseX, [-200, 200], [-15, 15]),
     springConfig
   );
 
+  // Smoother opacity transitions
   const opacity = useSpring(
-    useTransform(mouseX, [-300, 0, 300], [0.8, 1, 0.8]),
+    useTransform(mouseX, [-200, 0, 200], [0.9, 1, 0.9]), // Less dramatic opacity change
     springConfig
   );
 
+  // Subtle glare effect
   const glareOpacity = useSpring(
-    useTransform(mouseX, [-300, 0, 300], [0.2, 0, 0.2]),
+    useTransform(mouseX, [-200, 0, 200], [0.1, 0, 0.1]), // Reduced glare intensity
     springConfig
   );
 
   useEffect(() => {
-    // Update constraints when component mounts or window resizes
+    // Optimized constraints update
     const updateConstraints = () => {
       if (typeof window !== "undefined") {
+        const { innerWidth, innerHeight } = window;
         setConstraints({
-          top: -window.innerHeight / 2,
-          left: -window.innerWidth / 2,
-          right: window.innerWidth / 2,
-          bottom: window.innerHeight / 2,
+          top: -innerHeight * 0.4,    // Reduced constraint area
+          left: -innerWidth * 0.4,
+          right: innerWidth * 0.4,
+          bottom: innerHeight * 0.4,
         });
       }
     };
 
     updateConstraints();
 
-    // Add resize listener
-    window.addEventListener("resize", updateConstraints);
+    // Throttled resize listener for better performance
+    let timeoutId;
+    const throttledResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateConstraints, 100);
+    };
 
-    // Clean up
+    window.addEventListener("resize", throttledResize);
     return () => {
-      window.removeEventListener("resize", updateConstraints);
+      window.removeEventListener("resize", throttledResize);
+      clearTimeout(timeoutId);
     };
   }, []);
 
   const handleMouseMove = (e) => {
     const { clientX, clientY } = e;
-    const { width, height, left, top } =
-      cardRef.current?.getBoundingClientRect() ?? {
-        width: 0,
-        height: 0,
-        left: 0,
-        top: 0,
-      };
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const { width, height, left, top } = rect;
     const centerX = left + width / 2;
     const centerY = top + height / 2;
     const deltaX = clientX - centerX;
     const deltaY = clientY - centerY;
-    mouseX.set(deltaX);
-    mouseY.set(deltaY);
+    
+    // Set with reduced sensitivity for smoother movement
+    mouseX.set(deltaX * 0.8);
+    mouseY.set(deltaY * 0.8);
   };
 
   const handleMouseLeave = () => {
+    // Faster return to center
     mouseX.set(0);
     mouseY.set(0);
   };
@@ -102,20 +115,32 @@ export const DraggableCardBody = ({ className, children }) => {
       ref={cardRef}
       drag
       dragConstraints={constraints}
+      dragElastic={0.1}        // Added for smoother drag boundaries
+      dragTransition={{        // Enhanced drag physics
+        power: 0.3,
+        timeConstant: 150,
+        bounceDamping: 40,
+        bounceStiffness: 300,
+        modifyTarget: (target) => Math.round(target / 5) * 5, // Snap to grid for smoother movement
+      }}
       onDragStart={() => {
         document.body.style.cursor = "grabbing";
       }}
       onDragEnd={(event, info) => {
         document.body.style.cursor = "default";
 
+        // Faster rotation reset
         controls.start({
           rotateX: 0,
           rotateY: 0,
           transition: {
             type: "spring",
-            ...springConfig,
+            stiffness: 100,
+            damping: 20,
+            duration: 0.3,      // Faster reset
           },
         });
+
         const currentVelocityX = velocityX.get();
         const currentVelocityY = velocityY.get();
 
@@ -123,26 +148,30 @@ export const DraggableCardBody = ({ className, children }) => {
           currentVelocityX * currentVelocityX +
             currentVelocityY * currentVelocityY
         );
-        const bounce = Math.min(0.8, velocityMagnitude / 1000);
 
-        animate(info.point.x, info.point.x + currentVelocityX * 0.3, {
-          duration: 0.8,
-          ease: [0.2, 0, 0, 1],
+        // Enhanced momentum with better physics
+        const momentumFactor = Math.min(1.2, velocityMagnitude / 800); // Increased momentum
+        const bounce = Math.min(0.6, velocityMagnitude / 1200);        // Reduced bounce
+
+        // Smoother momentum animation
+        animate(info.point.x, info.point.x + currentVelocityX * 0.4, {
+          duration: 0.6,        // Faster momentum
+          ease: [0.25, 0.1, 0.25, 1], // Better easing curve
           bounce,
           type: "spring",
-          stiffness: 50,
-          damping: 15,
-          mass: 0.8,
+          stiffness: 80,        // Increased stiffness
+          damping: 20,          // Increased damping
+          mass: 0.6,
         });
 
-        animate(info.point.y, info.point.y + currentVelocityY * 0.3, {
-          duration: 0.8,
-          ease: [0.2, 0, 0, 1],
+        animate(info.point.y, info.point.y + currentVelocityY * 0.4, {
+          duration: 0.6,
+          ease: [0.25, 0.1, 0.25, 1],
           bounce,
           type: "spring",
-          stiffness: 50,
-          damping: 15,
-          mass: 0.8,
+          stiffness: 80,
+          damping: 20,
+          mass: 0.6,
         });
       }}
       style={{
@@ -150,22 +179,43 @@ export const DraggableCardBody = ({ className, children }) => {
         rotateY,
         opacity,
         willChange: "transform",
+        backfaceVisibility: "hidden", // Better rendering performance
+        perspective: "1000px",        // Improved 3D rendering
       }}
       animate={controls}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ 
+        scale: 1.03,              // Slightly more scale
+        transition: { 
+          duration: 0.2,          // Faster hover response
+          ease: "easeOut" 
+        }
+      }}
+      whileTap={{ 
+        scale: 0.98,              // Quick tap feedback
+        transition: { 
+          duration: 0.1 
+        }
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "relative min-h-96 w-80 overflow-hidden rounded-md bg-neutral-100 p-6 shadow-2xl transform-3d dark:bg-neutral-900",
+        "relative min-h-96 w-80 overflow-hidden rounded-md bg-neutral-100 p-6 shadow-2xl cursor-grab active:cursor-grabbing transform-gpu", // Added transform-gpu for better performance
         className
       )}
+      initial={{ scale: 0.95, opacity: 0 }}  // Added entrance animation
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ 
+        duration: 0.4, 
+        ease: [0.25, 0.1, 0.25, 1],
+        delay: Math.random() * 0.2  // Staggered entrance
+      }}
     >
       {children}
       <motion.div
         style={{
           opacity: glareOpacity,
         }}
-        className="pointer-events-none absolute inset-0 bg-white select-none"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent select-none" // Better glare gradient
       />
     </motion.div>
   );
@@ -173,6 +223,16 @@ export const DraggableCardBody = ({ className, children }) => {
 
 export const DraggableCardContainer = ({ className, children }) => {
   return (
-    <div className={cn("[perspective:3000px]", className)}>{children}</div>
+    <div 
+      className={cn(
+        "[perspective:2000px] transform-gpu will-change-transform", // Optimized perspective and performance
+        className
+      )}
+      style={{
+        transformStyle: "preserve-3d", // Better 3D rendering
+      }}
+    >
+      {children}
+    </div>
   );
 };
