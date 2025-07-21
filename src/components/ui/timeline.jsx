@@ -4,7 +4,7 @@ import Polaroid from "./polaroid";
 
 const folderNames = ["baby-toddler", "tween-teen1", "tween-teen2"];
 
-const generatePolaroids = (folderIndex, imageCount) => {
+const generatePolaroids = (folderIndex, imageCount, titles = []) => {
   const positions = [
     "top-10 left-[20%] rotate-[-5deg]",
     "top-40 left-[25%] rotate-[-7deg]",
@@ -23,31 +23,6 @@ const generatePolaroids = (folderIndex, imageCount) => {
   const folder = folderNames[folderIndex];
 
   
-  const titles = [
-    "Sweet Moments",
-    "Growing Up",
-    "Playing",
-    "Learning",
-    "Adventures",
-    "Big Smiles",
-    "First Steps",
-    "Happy Days",
-    "Memories",
-    "Fun Times",
-    "Special Day",
-    "New Discovery",
-    "Giggles",
-    "Exploring",
-    "Best Friends",
-    "Silly Face",
-    "Proud Moment",
-    "Summer Fun",
-    "Learning New Things",
-    "Joy",
-    "Cuddles",
-    "Playtime",
-  ];
-
   if (!folder || !imageCount) {
     console.log("Missing folder or imageCount:", {
       folderIndex,
@@ -57,13 +32,13 @@ const generatePolaroids = (folderIndex, imageCount) => {
     return [];
   }
 
-  return Array.from({ length: imageCount }, (_, j) => ({
-    title: titles[j % titles.length],
-    image: `/timeline/${folder}/img${j + 1}.jpg`,
-    className: `absolute ${positions[j % positions.length]} z-[${
-      imageCount - j
-    }] object-cover hover:z-50 transition-all duration-300 hover:scale-105`,
-  }));
+   return Array.from({ length: imageCount }, (_, j) => ({
+     title: titles[j % titles.length] || `Memory ${j + 1}`,
+     image: `/timeline/${folder}/img${j + 1}.jpg`,
+     className: `absolute ${positions[j % positions.length]} z-[${
+       imageCount - j
+     }] object-cover hover:z-50 transition-all duration-300 hover:scale-105`,
+   }));
 };
 
 export const Timeline = ({ data }) => {
@@ -117,7 +92,11 @@ export const Timeline = ({ data }) => {
                 {item.year}
               </h3>
               <Polaroid
-                items={generatePolaroids(index, item.imageCount || 6)}
+                items={generatePolaroids(
+                  index,
+                  item.imageCount || 6,
+                  item.titles
+                )}
                 message={item.message}
               />
             </div>

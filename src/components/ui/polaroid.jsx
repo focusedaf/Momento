@@ -9,7 +9,7 @@ export default function Polaroid({ items, message }) {
       <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-black text-neutral-400 md:text-4xl dark:text-neutral-800 font-primary">
         {message}
       </p>
-      {items.map((item, index) => (
+      {[...items].reverse().map((item, index) => (
         <DraggableCardBody key={index} className={item.className}>
           <div className="bg-white shadow-xl rounded-md p-4 flex flex-col items-center space-y-3 dark:bg-neutral-200">
             <img
